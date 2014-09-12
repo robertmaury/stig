@@ -1,0 +1,68 @@
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+-A INPUT -p icmp --icmp-type echo-reply -j ACCEPT
+-A INPUT -p icmp --icmp-type destination-unreachable -j ACCEPT
+-A INPUT -p icmp --icmp-type time-exceeded -j ACCEPT
+-A INPUT -p icmp --icmp-type echo-request -j ACCEPT
+-A INPUT -s 10.0.0.0/8 -j LOG --log-prefix "IP DROP SPOOF A: "
+-A INPUT -s 172.16.0.0/12 -j LOG --log-prefix "IP DROP SPOOF B: "
+-A INPUT -s 192.168.0.0/16 -j LOG --log-prefix "IP DROP SPOOF C: "
+-A INPUT -s 224.0.0.0/4 -j LOG --log-prefix "IP DROP MULTICAST D: "
+-A INPUT -s 240.0.0.0/5 -j LOG --log-prefix "IP DROP SPOOF E: "
+-A INPUT -d 127.0.0.0/8 -j LOG --log-prefix "IP DROP LOOPBACK: "
+-A INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j ACCEPT
+-A INPUT -i <%= localinterface %> -m state --state RELATED,ESTABLISHED -j ACCEPT
+# To restrict SSH, remove the previous line, then edit and uncomment the following line (replacing netwk and mask with appropriate values)
+#-A INPUT -s netwk/mask -m state --state NEW -p tcp --dport 22 -j ACCEPT
+<% if scope.lookupvar('stig::ftpserver') then %>
+-A INPUT -m state --state NEW -p tcp --dport 21 -j ACCEPT
+<% end -%>
+<% if scope.lookupvar('stig::webserver') then %>
+-A INPUT -m state --state NEW -p tcp --dport 80 -j ACCEPT
+#-A INPUT -m state --state NEW -p tcp --dport 443 -j ACCEPT
+<% end -%>
+<% if scope.lookupvar('stig::syslogserver') then %>
+-A INPUT -s netwk/mask -i <%= localinterface %> -p udp -m udp --dport 514 -m state --state NEW,ESTABLISHED -m comment --comment "103 Allow UDP syslog" -j ACCEPT 
+-A INPUT -s netwk/mask -i <%= localinterface %> -p tcp -m tcp --dport 514 -m state --state NEW,ESTABLISHED -m comment --comment "104 Allow TCP syslog" -j ACCEPT 
+<% end -%>
+<% if scope.lookupvar('stig::ldapserver') then %>
+-A INPUT -s netwk/mask -i <%= localinterface %> -p tcp -m tcp --dport 389 -m state --state NEW,ESTABLISHED -m comment --comment "105 Allow LDAP TCP 389" -j ACCEPT 
+-A INPUT -s netwk/mask -i <%= localinterface %> -p udp -m udp --dport 389 -m state --state NEW,ESTABLISHED -m comment --comment "106 Allow LDAP UDP 389" -j ACCEPT 
+-A INPUT -s netwk/mask -i <%= localinterface %> -p tcp -m tcp --dport 636 -m state --state NEW,ESTABLISHED -m comment --comment "107 Allow LDAP TCP 636" -j ACCEPT 
+-A INPUT -s netwk/mask -i <%= localinterface %> -p udp -m udp --dport 636 -m state --state NEW,ESTABLISHED -m comment --comment "108 Allow LDAP UDP 636" -j ACCEPT 
+<% end -%>
+<% if scope.lookupvar('stig::dnsserver') then %>
+-A INPUT -i <%= localinterface %> -p udp -m udp --dport 53 -m state --state NEW,ESTABLISHED -m comment --comment "109 Allowing Incoming DNS UDP" -j ACCEPT 
+-A INPUT -i <%= localinterface %> -p tcp -m tcp --dport 53 -m state --state NEW,ESTABLISHED -m comment --comment "110 Allowing Incoming DNS TCP" -j ACCEPT 
+<% end -%>
+<% if scope.lookupvar('stig::mailserver') then %>
+-A INPUT -s netwk/mask -i <%= localinterface %> -p tcp -m tcp --dport 25 -m state --state NEW,ESTABLISHED -m comment --comment "111 Allow SMTP connections from internal netwk/mask" -j ACCEPT
+-A INPUT -s netwk/mask -i <%= localinterface %> -p tcp -m tcp -m state --state NEW,ESTABLISHED -m comment --comment "112 Allow SMTP connections from external netwk/mask" -j ACCEPT 
+-A INPUT -s netwk/mask -i <%= localinterface %> -p tcp -m tcp --dport 110 -m state --state NEW,ESTABLISHED -m comment --comment "113 Allow POP3 connections from internal netwk/mask" -j ACCEPT 
+-A INPUT -s netwk/mask -i <%= localinterface %> -p tcp -m tcp --dport 995 -m state --state NEW,ESTABLISHED -m comment --comment "114 Allow POP3 SSL connections from internal netwk/mask" -j ACCEPT 
+-A INPUT -s netwk/mask -i <%= localinterface %> -p tcp -m tcp --dport 143 -m state --state NEW,ESTABLISHED -m comment --comment "115 Allow IMAP connections from internal netwk/mask" -j ACCEPT 
+<% end -%>
+<% if scope.lookupvar('stig::nfsserver') then %>
+-A INPUT -s netwk/mask -i <%= localinterface %> -p tcp -m tcp --dport 111 -m state --state NEW,ESTABLISHED -m comment --comment "116 Allow NFS TCP portmapper from internal netwk/mask" -j ACCEPT 
+-A INPUT -s netwk/mask -i <%= localinterface %> -p udp -m udp --dport 111 -m state --state NEW,ESTABLISHED -m comment --comment "117 Allow NFS UDP portmapper from internal netwk/mask" -j ACCEPT 
+-A INPUT -s netwk/mask -i <%= localinterface %> -p tcp -m tcp --dport 2049 -m state --state NEW,ESTABLISHED -m comment --comment "118 Allow NFS TCP 2049 from internal netwk/mask" -j ACCEPT 
+-A INPUT -s netwk/mask -i <%= localinterface %> -p udp -m udp --dport 2049 -m state --state NEW,ESTABLISHED -m comment --comment "119 Allow NFS UDP 2049 from internal netwk/mask" -j ACCEPT 
+-A INPUT -s netwk/mask -i <%= localinterface %> -p tcp -m tcp --dport 0:32768 -m state --state NEW,ESTABLISHED -m comment --comment "120 Allow NFS TCP 0:32768 from internal netwk/mask" -j ACCEPT 
+-A INPUT -s netwk/mask -i <%= localinterface %> -p udp -m udp --dport 0:32768 -m state --state NEW,ESTABLISHED -m comment --comment "121 Allow NFS UDP 0:32768 from internal netwk/mask" -j ACCEPT
+<% end -%>
+<% if scope.lookupvar('stig::krbserver') then %>
+-A INPUT -s netwk/mask -i <%= localinterface %> -p tcp -m tcp --dport 88 -m state --state NEW,ESTABLISHED -m comment --comment "123 Allow KRB TCP 88 from internal netwk/mask" -j ACCEPT 
+-A INPUT -s netwk/mask -i <%= localinterface %> -p udp -m udp --dport 88 -m state --state NEW,ESTABLISHED -m comment --comment "123 Allow KRB UDP 88 from internal netwk/mask" -j ACCEPT 
+-A INPUT -s netwk/mask -i <%= localinterface %> -p tcp -m tcp --dport 464 -m state --state NEW,ESTABLISHED -m comment --comment "124 Allow KRB TCP 464 (kpasswd) from internal netwk/mask" -j ACCEPT 
+-A INPUT -s netwk/mask -i <%= localinterface %> -p udp -m udp --dport 464 -m state --state NEW,ESTABLISHED -m comment --comment "124 Allow KRB UDP 464 (kpasswd) from internal netwk/mask" -j ACCEPT 
+-A INPUT -s netwk/mask -i <%= localinterface %> -p tcp -m tcp --dport 749 -m state --state NEW,ESTABLISHED -m comment --comment "125 Allow KRB TCP 749 (kadmin) from internal netwk/mask" -j ACCEPT 
+-A INPUT -s netwk/mask -i <%= localinterface %> -p udp -m udp --dport 749 -m state --state NEW,ESTABLISHED -m comment --comment "125 Allow KRB UDP 749 (kadmin) from internal netwk/mask" -j ACCEPT 
+<% end -%>
+<% if scope.lookupvar('stig::puppetserver') then %>
+-A INPUT -s netwk/mask -i <%= localinterface %> -p tcp -m tcp --dport 8140 -m comment --comment "151 Allow PUPPET from internal netwk/mask" -j ACCEPT 
+<% end -%>
+-A INPUT --reject-with icmp-host-prohibited -j REJECT
+-A FORWARD --reject-with icmp-host-prohibited -j REJECT
+COMMIT

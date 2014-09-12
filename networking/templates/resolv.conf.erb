@@ -1,0 +1,5 @@
+domain <%= @domain %>
+search <%= @domain %>
+<% scope.lookupvar('stig::dnsservers').split(",").each do |dns| -%>
+nameserver <%= @dns %>
+<% end %>
