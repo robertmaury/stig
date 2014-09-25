@@ -36,6 +36,9 @@ class banner {
   }
 }
 
+# This should most likely be parsed conditionally in the init,
+# pulling gdm conditionals out into their own file.  Maybe on
+# Second run?
 class banner::gdm {
   file {
     '/etc/gdm/custom.conf':
@@ -50,7 +53,7 @@ class banner::gdm {
       owner  => 'gdm',
       group  => 'gdm',
       mode   => '0600',
-      source => "puppet:///modules/banner/%gconf.xml";
+      source => 'puppet:///modules/banner/%gconf.xml';
     [
       '/var/lib/gdm/.gconf/apps/gdm/simple-greeter',
       '/var/lib/gdm/.gconf/apps/gdm/',
@@ -58,8 +61,8 @@ class banner::gdm {
     ]:
       ensure => directory;
     [
-      "/var/lib/gdm/.gconf/apps/gdm/%gconf.xml",
-      "/var/lib/gdm/.gconf/apps/%gconf.xml",
+      '/var/lib/gdm/.gconf/apps/gdm/%gconf.xml',
+      '/var/lib/gdm/.gconf/apps/%gconf.xml',
     ]:
       ensure => present;
   }
