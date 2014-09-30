@@ -2,29 +2,30 @@
 # Class: sudo
 #
 # Description:
-#	This file sets up the sudoers file for an admin group
+# This file sets up the sudoers file for an admin group
 #
 # Variables:
-#	None
+# None
 #
 # Facts:
-#	None
+# None
 #
 # Files:
-#	None
+# None
 #
 # Templates:
-#	None
+# None
 #
 # Dependencies:
-#	None
+# None
 ############################################################
 class sudo {
-	file {
-		"/etc/sudoers.d/sudogroup":
-			owner   => root,
-			group   => root,
-			mode    => 440,
-			content => template("sudo/sudoers.erb"),
-	}
+  file {
+    '/etc/sudoers.d/sudogroup':
+      ensure  => 'present',
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0440',
+      content => template('sudo/sudoers.erb'),
+  }
 }
