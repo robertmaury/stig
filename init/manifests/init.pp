@@ -2,29 +2,29 @@
 # Class: init
 #
 # Description:
-#	Set key values to secure the init process
+# Set key values to secure the init process
 #
 # Variables:
-#	None
+# None
 #
 # Facts:
-#	None
+# None
 #
 # Files:
-#	None
+# None
 #
 # Templates:
-#	None
+# None
 #
 # Dependencies:
-#	None
+# None
 ############################################################
 class init {
-	file {
-		"/etc/init/control-alt-delete.conf":
-			owner   => root,
-			group   => root,
-			mode    => 644,
-			content => "start on control-alt-delete\n\nexec /usr/bin/logger -p security.info \"Ctrl-Alt-Delete pressed\"";
-	}
+  file {
+    '/etc/init/control-alt-delete.conf':
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      content => 'start on control-alt-delete\n\nexec /usr/bin/logger -p security.info \"Ctrl-Alt-Delete pressed\"';
+  }
 }
