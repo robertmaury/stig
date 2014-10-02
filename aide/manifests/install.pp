@@ -1,8 +1,8 @@
 ############################################################
-# Class: aide
+# Class: aide::install
 #
 # Description:
-# Installs and configures aide, and disables prelinking
+# Installs aide
 #
 # Variables:
 # None
@@ -21,7 +21,11 @@
 # Dependencies:
 # None
 ############################################################
-class aide {
-  include aide::config
-  include aide::install
+class aide::install {
+  # Install AIDE
+  package {
+    'aide':
+      ensure  => latest,
+      require => Class['yum'];
+  }
 }
