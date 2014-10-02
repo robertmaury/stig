@@ -11,8 +11,8 @@
 # architecture -> used to select the appropiate rules for the system
 #
 # Files:
-# audit/files/audit.rules.x64
-# audit/files/audit.rules.x86
+# audit/files/audit.rules.x86_64
+# audit/files/audit.rules.i386
 #
 # Templates:
 # None
