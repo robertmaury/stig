@@ -1,9 +1,8 @@
 ############################################################
-# Class: accounts
+# Class: audit::install
 #
 # Description:
-# Disable unnecessary accounts and restrict virtual
-# console logins
+# This will install the auditd service
 #
 # Variables:
 # None
@@ -20,6 +19,10 @@
 # Dependencies:
 # None
 ############################################################
-class accounts {
-  include accounts::config
+class audit::install {
+  package {
+    'audit':
+      ensure  => 'latest',
+      require => Class['yum'],
+  }
 }

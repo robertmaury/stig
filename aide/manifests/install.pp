@@ -1,9 +1,8 @@
 ############################################################
-# Class: accounts
+# Class: aide::install
 #
 # Description:
-# Disable unnecessary accounts and restrict virtual
-# console logins
+# Installs aide
 #
 # Variables:
 # None
@@ -12,7 +11,9 @@
 # None
 #
 # Files:
-# None
+# aide/files/aide.conf
+# aide/files/aide.cron
+# aide/files/aidereset.cron
 #
 # Templates:
 # None
@@ -20,6 +21,11 @@
 # Dependencies:
 # None
 ############################################################
-class accounts {
-  include accounts::config
+class aide::install {
+  # Install AIDE
+  package {
+    'aide':
+      ensure  => latest,
+      require => Class['yum'];
+  }
 }

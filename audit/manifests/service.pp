@@ -1,9 +1,8 @@
 ############################################################
-# Class: accounts
+# Class: audit::service
 #
 # Description:
-# Disable unnecessary accounts and restrict virtual
-# console logins
+# This will run the auditd service
 #
 # Variables:
 # None
@@ -20,6 +19,12 @@
 # Dependencies:
 # None
 ############################################################
-class accounts {
-  include accounts::config
+class audit::service {
+  service {
+    'auditd':
+      ensure    => 'running',
+      enable    => true,
+      hasstatus => true,
+      require   => Package['audit'],
+  }
 }
